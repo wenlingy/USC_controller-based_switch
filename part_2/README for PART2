@@ -1,0 +1,110 @@
+README for PART2
+
+2017 Spring EE_555 Final Project --- Part 2
+
+Group Member:
+Han Zheng      Hanzheng@usc.edu
+Duoyao Zhang   Duoyaozh@usc.edu
+Wenling Yang   Wenlingy@usc.edu
+
+DESCRIPTION OF CODE FILE:
+
+There are 4 different code file in this part and consists of 2 sections,
+Section1 consists of mytopo2.py and my_router2.py;
+Section2 consists of firewal_policy.csv and firewall.py
+
+--------------------------SECTION 1------------------------------------
+1.mytopo2.py --In this code the following topology was implemented:
+
+Two directly connected switches plus host3 and host4 for switch1 and host5 for switch2:
+
+	   host3 --- switch1 --- switch2 --- host5
+	               |
+	             host4
+
+The hosts had the following IP addresses:
+	Host 3 - 10.0.1.2
+
+	Host 4 - 10.0.1.3
+
+	Host 5 - 10.0.2.2
+
+2.my_router2.py
+
+In this code we configured the switch in mytopo2.py and we configured 2 static routing tables in order to check the IP address of the hosts. In this case,
+
+	A )when it comes to ARP requests the controller checks the origination of the packet and whether it comes from subnet 1 or subnet 2,
+	 if it comes from subnet 1 then it will sent the MAC ID of the first switch otherwise it will send the MAC ID of switch 2.
+
+	B )After ARP it goes to the ICMP request part, it checks whether the ICMP request comes from router 1 by checking the MAC ID and
+	if it belongs to switch 1 then it checks the routing table whether the host is available in the first routing table. If it is not
+	available in the first routing table then it says the ICMP destination is unavailable. The same process is repeated for the MAC ID
+	of switch 2. After this we perform the static routing part where the MAC id of the packet is checked again then sent to the
+	corresponding MAC IDs obtained from the routing table.
+
+--------------------------SECTION 2---------------------------------------------
+3.firewal_policy.csv
+    This csv file stores Mac address of host 2 and host 3, according to the tutorial about
+    creating firewall, we need to block communication between h2 and h3.
+    So these two hosts' Mac addresses are stored into policy file to read by firewall.py.
+
+
+4.firewall.py
+    This implements firewall function on a layer 2 switch. First, it reads rules from
+    firewal_policy.csv to update firewall rules and add it to flow table. Then implement
+    switch's basic funtion. Learning mac_to_port, if out port is none, flood the packet
+    to all other port, else add flow entry in bidirection.
+
+-----------------------------------------------------------------------------------------
+INSTRUCTIONS ON RUNNING SECTION 1 CODE FILE:
+
+1. This project requires Mininet and VirtualBox softwares in order to function in the correct manner
+1. Put my_router2.py in the path /home/mininet/pox/pox/misc
+2. Put mytopo2.py in the path /home/mininet
+
+$ sudo mn -c
+$ sudo mn --custom mytopo2.py --topo mytopo --mac --switch ovsk --controller remote
+
+3. For the controller part:
+
+Run the controller in /home/mininet/pox:
+
+$ ./pox.py log.level --DEBUG misc.my_router2 misc.full_payload
+
+4. To check the packet traffic on any interface
+
+tcpdump -xx -n -i <interface_name>
+
+-----------------------------------------------------------------------------------------
+INSTRUCTIONS ON RUNNING SECTION 2 CODE FILE:
+1. create the topology
+    $ sudo mn -c
+    $ sudo mn --topo single,3 --mac --switch ovsk --controller remote
+
+    This tells Mininet to start up a 3-host, single-(openvSwitch-based)switch topology,
+    set the MAC address of each host equal to its IP, and point to a remote controller
+    which defaults to the localhost.
+
+    creates router topology as follows:
+
+    host --- switch --- host
+               |
+              host
+
+2. open firewall controller
+    firewall.py is in the path /home/mininet/pox/pox/misc
+    firewall_policy.csv is in the path /home/mininet/pox/pox/misc
+
+    The firewall_policy.csv contains the MAC addresses that are blocked in the firewall.
+
+    run this firewall in /home/mininet/pox:
+    $ ./pox.py log.level --DEBUG misc.firewall
+
+3. verify hosts by ping each other or ping all
+
+    In the Mininet console,
+    pingall or h# ping h# (eg, h1 ping h2)
+
+    Also, you can check the packet traffic on any interface by starting up xterms.
+    In the xterms run tcpdump like this:
+    # tcpdump -XX -n -i <interface>

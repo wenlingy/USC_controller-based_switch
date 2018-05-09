@@ -1,0 +1,98 @@
+README for PART1
+
+2017 Spring EE_555 Final Project --- Part 1
+
+Group Member:
+Han Zheng      Hanzheng@usc.edu
+Duoyao Zhang   Duoyaozh@usc.edu
+Wenling Yang   Wenlingy@usc.edu
+
+DESCRIPTION OF CODE FILE:
+There are 3 different code fileS in this part:  
+
+1. of_tutorial.py 
+    
+    This python file implements the learning switch as openflow tutorial asked for.
+
+2. mytopo1.py
+    
+    This python file creates the topology in Router Exercise as follows:
+        host --- switch --- host
+                   |
+                  host
+    For this static layer-3 forwader/switch, it consists of three subnets: 10.0.1.0/24, 
+    10.0.2.0/24 and 10.0.3.0/24. The host1(10.0.1.100/24) is connected through interface 
+    s1-eth1. The host2(10.0.2.100/24) is connected through interface s1-eth2. The host3
+    (10.0.3.100/24) is connected through interface s1-eth3. 
+
+    The IP addresses for three interfaces is 10.0.1.1, 10.0.2.1 and 10.0.3.1, respectively.
+
+3. my_router1.py
+
+    This python file implements the function of above static layer-3 forwader/switch. 
+    It can match on masked IP prefix ranges acting like a router.
+
+
+
+Instructions about running these files:
+
+Learning switch part
+
+1. create the topology
+    $ sudo mn -c
+    $ sudo mn --topo single,3 --mac --switch ovsk --controller remote
+
+    This tells Mininet to start up a 3-host, single-(openvSwitch-based)switch topology, 
+    set the MAC address of each host equal to its IP, and point to a remote controller 
+    which defaults to the localhost.
+    
+    creates swtich topology as follows:
+
+    host --- switch --- host
+               |
+              host
+
+2. open learning switch controller
+    of_tutorial.py is in the path /home/mininet/pox/pox/misc
+
+    run this switch in /home/mininet/pox:
+    $ ./pox.py log.level --DEBUG misc.of_tutorial
+
+3. verify hosts by ping each other or ping all
+    In the Mininet console, 
+    pingall or h# ping h# (eg, h1 ping h2)
+
+    Also, you can check the packet traffic on any interface by starting up xterms.
+    In the xterms run tcpdump like this:
+    # tcpdump -XX -n -i <interface>
+
+
+Router part
+
+1. create the topology
+
+    mytopo1.py creates router topology as follows:
+
+    host --- switch --- host
+               |
+              host
+
+    mytopo1.py is in the path /home/mininet
+
+    $ sudo mn -c
+    $ sudo mn --custom mytopo1.py --topo mytopo --mac --switch ovsk --controller remote
+
+2. open router controller
+    my_router1.py is in the path /home/mininet/pox/pox/misc
+    
+    run this static router in /home/mininet/pox:
+    $ ./pox.py log.level --DEBUG misc.my_router1 misc.full_payload
+
+3. verify hosts by ping each other or ping all
+
+    In the Mininet console, 
+    pingall or h# ping h# (eg, h1 ping h2)
+
+    Also, you can check the packet traffic on any interface by starting up xterms.
+    In the xterms run tcpdump like this:
+    # tcpdump -XX -n -i <interface>

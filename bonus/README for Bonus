@@ -1,0 +1,55 @@
+README for Bounus
+
+2017 Spring EE_555 Final Project --- Bonus
+
+Group Member:
+Han Zheng      Hanzheng@usc.edu
+Duoyao Zhang   Duoyaozh@usc.edu
+Wenling Yang   Wenlingy@usc.edu
+
+DESCRIPTION OF CODE FILE:
+
+There are 2 different code files in this part
+
+1.mytopo3.py --In this code the following topology was implemented:
+	Three linear connected switches plus 2 hosts for switch1, 1 host for switch2 and 1 host for switch3:
+
+   host1 --- switch1 --- switch2 --- switch3 --- host4
+                |           |
+              host2        host3
+	 The hosts had the following IP addresses:
+	Host 1 - 10.0.1.2
+
+	Host 2 - 10.0.1.3
+
+	Host 3 - 10.0.2.2
+
+	Host 4 - 10.0.3.2
+
+2.my_router3.py
+	In this code we configured the switch in mytopo3.py and we configured 3 static routing tables in order to check the IP address of the hosts. In this case,
+		A )when it comes to ARP requests it checks the origination of the packet and whether it comes from subnet 1, subnet 2 or subnet 3.
+		If it comes from subnet 1 then it will sent the MAC ID of the switch1; similarly for the packet comes from subnet 2 and subnet3
+		B )After ARP it goes to the ICMP request part, it checks whether the destination's IP address is reachable in current routing table.
+		If it is not available in the routing table then it says the ICMP destination is unavailable. The same process is repeated for the
+		switch 2 and switch3. After this we perform the static routing part where the MAC id of the packet is checked again then sent to
+		the corresponding MAC IDs obtained from the routing table.
+
+INSTRUCTIONS ON RUNNING  CODE FILE:
+
+1. This project requires Mininet and VirtualBox softwares in order to function in the correct manner
+1. Put my_router3.py in the path /home/mininet/pox/pox/misc
+2. Put mytopo3.py in the path /home/mininet
+
+$ sudo mn -c
+$ sudo mn --custom mytopo3.py --topo mytopo --mac --switch ovsk --controller remote
+
+3. For the controller part:
+
+Run the controller in /home/mininet/pox
+
+$ ./pox.py log.level --DEBUG misc.my_router3 misc.full_payload
+
+4. To check the packet traffic on any interface
+
+tcpdump -xx -n -i <interface_name>
